@@ -1,0 +1,9 @@
+- lets say you are looking for a value in 
+  a table, and you want look for a match.
+  the  WHERE clause can help, example 
+  "SELECT * FROM users WHERE email = $1".
+  in this case $1 is the value parametarized
+  but you could do WHERE email = gatelyj231@gmail.com
+  and that would be valid.
+  
+- 

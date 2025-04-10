@@ -1,0 +1,19 @@
+---   psql postgres
+
+
+---   cloudcart=# \dt
+           List of relations
+ Schema | Name  | Type  |    Owner     
+--------+-------+-------+--------------
+ public | users | table | jackgatelyjr
+(1 row)
+
+----   SELECT * FROM users;
+
+ id |       name        |      email       | password 
+----+-------------------+------------------+----------
+  1 | John Doe          | john@example.com | test123
+  2 | Jutapech Rungchen |  baby@gmail.com  | test123
+
+
+TO INSERT A NEW USER --->   INSERT INTO users (name, email, password) VALUES ('Alice Example', 'alice@example.com', 'test123');
