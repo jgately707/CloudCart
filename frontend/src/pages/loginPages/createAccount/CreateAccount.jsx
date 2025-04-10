@@ -35,6 +35,26 @@ const CreateAccount = () => {
                     email.includes("@yahoo.com");
 
         if (flag1 && flag2 && flag3) {
+          try {
+            const response = await fetch("http://localhost:5001/create-account", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                name: name.trim(),
+                email: email.trim(),
+                password: password
+              })
+            });
+
+            const data = await response.json(); // receive the server's response
+            console.log("Server says:", data);
+            setMessage(data.message || "Account Created");
+
+          } catch (error) {
+            
+          }
           setMessage("Account Created");
         } else {
           let errorMessage = "";

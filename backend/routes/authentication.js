@@ -18,6 +18,15 @@ router.post('/check-email', async (req, res) => {
     res.status(500).json({ error: 'Database error', details: err.message });
   }
 });
+router.post('/create-account', async (req, res) => {
+    const { name, email, password } = req.body
+    try {
+        const result = await pool.query('INSERT into users (name, email, password) VALUES ($1, $2, $3)', [name, email, password])
+    } catch (error) {
+      console.error("Database error:", err);
+      res.status(500).json({ error: 'Database error', details: err.message });
+    }
+})
 
 // Debug log to verify this file is loaded
 console.log("Authentication routes loaded");
