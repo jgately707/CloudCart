@@ -1,15 +1,11 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import React from 'react';
 
-function App() {
+const UserHomePage = () => {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/home" element={<UserHomePage />} />
-        {/* You can add additional routes here */}
-      </Routes>
-    </BrowserRouter>
+    <div>
+      <h1>Welcome to your home page!</h1>
+    </div>
   );
-}
+};
 
-export default App;
+export default UserHomePage;
