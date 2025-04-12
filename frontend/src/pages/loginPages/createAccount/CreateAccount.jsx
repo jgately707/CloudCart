@@ -8,7 +8,6 @@ const CreateAccount = () => {
   const [message, setMessage] = useState(''); // New state for the message
 
   async function handleSubmit() {
-    console.log("Submit button clicked");
     try {
       const response = await fetch("http://localhost:5001/check-email", {
         method: "POST",
@@ -37,16 +36,17 @@ const CreateAccount = () => {
         if (flag1 && flag2 && flag3) {
           try {
             const response = await fetch("http://localhost:5001/create-account", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json"
-              },
-              body: JSON.stringify({
-                name: name.trim(),
-                email: email.trim(),
-                password: password
-              })
-            });
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    name: name.trim(),
+    email: email.trim(),
+    password: password,
+    confirmPassword: confirmPassword // add this line
+  })
+});
 
             const data = await response.json(); // receive the server's response
             console.log("Server says:", data);

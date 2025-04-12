@@ -6,4 +6,6 @@
   but you could do WHERE email = gatelyj231@gmail.com
   and that would be valid.
   
-- 
+- Consider using HTTPS in production
+
+
