@@ -1,12 +1,17 @@
+// backend/server.js
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const app = express();
-const authRoutes = require('./routes/authentication');
 
-app.use(cors());               // Enable CORS for all origins
-app.use(express.json());       // Enable JSON body parsing
-app.use(authRoutes);           // Use the authentication routes
+const authRoutes = require('./routes/authentication');
+const productRoutes = require('./routes/products'); // ← make sure it's products.js
+
+app.use(cors());
+app.use(express.json());
+
+app.use(authRoutes);
+app.use('/api/products', productRoutes); // ← must come after express.json()
 
 const PORT = 5001;
 app.listen(PORT, () => {

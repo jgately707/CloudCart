@@ -1,12 +1,108 @@
 // src/pages/homePages/UserHomePage/UserHomePage.jsx
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Logo from '../../../components/Logo';
 import ShoppingCartButton from '../../../components/ShoppingCartButton';
 import AccountButton from '../../../components/AccountButton';
 import electronicsBanner from '../../../components/images/shopElectronics.png';
+import ProductCard from '../../Product/ProductCard';
 import './UserHomePage.CSS';
 
-// Search icon SVG
+const UserHomePage = () => {
+  const [featuredProducts, setFeaturedProducts] = useState([]);
+
+useEffect(() => {
+  fetch('http://localhost:5001/api/products/featured')
+    .then(res => res.json())
+    .then(data => setFeaturedProducts(data))
+    .catch(err => console.error(err));
+}, []);
+
+  return (
+    <div style={{ backgroundColor: '#f9f9f9', minHeight: '100vh' }}>
+      <header style={headerStyle}>
+        <Logo />
+        <div style={searchWrapperStyle}>
+          <input
+            type="text"
+            placeholder="Search for products, brands and shops"
+            style={inputStyle}
+          />
+          <button style={searchButtonStyle} onClick={() => alert('Search')}>
+            {SearchIcon}
+          </button>
+        </div>
+        <div style={actionButtonsStyle}>
+          <ShoppingCartButton />
+          <AccountButton />
+        </div>
+      </header>
+
+      <HomeSections featuredProducts={featuredProducts} />
+    </div>
+  );
+};
+
+const HomeSections = ({ featuredProducts }) => (
+  <div>
+    <ElectronicsBanner />
+    <CategorySection />
+    
+    {/* Featured Products */}
+    <div style={{ marginLeft: '160px', marginTop: '40px' }}>
+  <h2 style={{ fontSize: '22px', fontWeight: '600' }}>Featured Products</h2>
+  <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', marginTop: '20px' }}>
+    {featuredProducts.map(product => (
+      <ProductCard
+        key={product.product_id}
+        name={product.product_title}
+        price={product.product_price}
+        image={product.product_images[0]}
+      />
+    ))}
+  </div>
+</div>
+
+    {/* Other Sections */}
+    <div style={sectionHeaderStyle}>Travel Essentials</div>
+    <div style={sectionHeaderStyle}>Best in Video Games</div>
+  </div>
+);
+
+const ElectronicsBanner = () => (
+  <div style={bannerStyle}>
+    <img
+      src={electronicsBanner}
+      alt="New arrivals in electronics"
+      style={{
+        backgroundColor: 'white',
+        width: '80%',
+        height: '280px',
+        objectFit: 'cover',
+        borderRadius: '12px',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+      }}
+    />
+  </div>
+);
+
+const CategoryButton = ({ icon, label }) => (
+  <button style={categoryButtonStyle} onClick={() => alert(`Clicked on: ${label}`)}>
+    <div style={{ marginBottom: '8px', fontSize: '24px' }}>{icon}</div>
+    <span style={{ fontSize: '14px', fontWeight: 'bold' }}>{label}</span>
+  </button>
+);
+
+const CategorySection = () => (
+  <div style={categorySectionStyle}>
+    <CategoryButton icon={ElectronicsIcon} label="Electronics" />
+    <CategoryButton icon={HomeIcon} label="Home" />
+    <CategoryButton icon={ClothesIcon} label="Clothes" />
+    <CategoryButton icon={TrendyIcon} label="Trendy" />
+    <CategoryButton icon={SupermarketIcon} label="Supermarket" />
+    <CategoryButton icon={DealsIcon} label="Deals" />
+  </div>
+);
+
 const SearchIcon = (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <circle cx="11" cy="11" r="7" stroke="#555" strokeWidth="2" />
@@ -14,50 +110,21 @@ const SearchIcon = (
   </svg>
 );
 
-const UserHomePage = () => (
-  <div style={{ backgroundColor: '#f9f9f9', minHeight: '100vh' }}>
-    <header style={headerStyle}>
-      <Logo />
-
-      {/* Centered search */}
-      <div style={searchWrapperStyle}>
-        <input
-          type="text"
-          placeholder="Search for products, brands and shops"
-          style={inputStyle}
-        />
-        <button style={searchButtonStyle} onClick={() => alert('Search')}>
-          {SearchIcon}
-        </button>
-      </div>
-
-      {/* Cart & Account */}
-      <div style={actionButtonsStyle}>
-        <ShoppingCartButton />
-        <AccountButton />
-      </div>
-    </header>
-
-    <HomeSections />
-  </div>
-);
-
 /* ---------- Styles ---------- */
 const headerStyle = {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
-  padding: '10px 168px 10px 142px',  // ← right:20px, left:10px
+  padding: '10px 168px 10px 142px',
   backgroundColor: '#e3f2fd',
   boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
 };
 
 const searchWrapperStyle = {
-  flex: '0 1 800px',    // ← allow up to 800px (was 700px)
+  flex: '0 1 800px',
   display: 'flex',
   margin: '0 auto',
 };
-
 
 const inputStyle = {
   flex: 1,
@@ -84,8 +151,6 @@ const actionButtonsStyle = {
   alignItems: 'center',
   gap: '12px',
 };
-
-/* Banner and category styles unchanged… */
 
 const bannerStyle = {
   width: '100%',
@@ -122,36 +187,15 @@ const categoryButtonStyle = {
   boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
 };
 
-const HomeSections = () => (
-  <div>
-    <ElectronicsBanner />
-    <CategorySection />
-  </div>
-);
-
-const ElectronicsBanner = () => (
-  <div style={bannerStyle}>
-    <img
-      src={electronicsBanner}
-      alt="New arrivals in electronics"
-      style={{
-        backgroundColor: 'white',
-        width: '80%',
-        height: '280px',
-        objectFit: 'cover',
-        borderRadius: '12px',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-      }}
-    />
-  </div>
-);
-
-const CategoryButton = ({ icon, label }) => (
-  <button style={categoryButtonStyle} onClick={() => alert(`Clicked on: ${label}`)}>
-    <div style={{ marginBottom: '8px', fontSize: '24px' }}>{icon}</div>
-    <span style={{ fontSize: '14px', fontWeight: 'bold' }}>{label}</span>
-  </button>
-);
+const sectionHeaderStyle = {
+  textAlign: 'left',
+  marginLeft: '160px',
+  marginTop: '420px',
+  fontSize: '22px',
+  fontWeight: '600',
+  color: '#333',
+  letterSpacing: '0.5px',
+};
 
 const ElectronicsIcon = (
   <span role="img" aria-label="electronics" style={{ fontSize: '24px' }}>🔌</span>
@@ -175,17 +219,6 @@ const SupermarketIcon = (
 
 const DealsIcon = (
   <span style={{ fontSize: '24px', fontWeight: 'bold' }}>$</span>
-);
-
-const CategorySection = () => (
-  <div style={categorySectionStyle}>
-    <CategoryButton icon={ElectronicsIcon} label="Electronics" />
-    <CategoryButton icon={HomeIcon} label="Home" />
-    <CategoryButton icon={ClothesIcon} label="Clothes" />
-    <CategoryButton icon={TrendyIcon} label="Trendy" />
-    <CategoryButton icon={SupermarketIcon} label="Supermarket" />
-    <CategoryButton icon={DealsIcon} label="Deals" />
-  </div>
 );
 
 export default UserHomePage;
