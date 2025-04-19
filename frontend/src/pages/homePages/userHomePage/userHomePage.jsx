@@ -13,8 +13,10 @@ const UserHomePage = () => {
   const [featuredProducts, setFeaturedProducts] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost:5001/api/products/featured')
-      .then(res => res.json())
+    fetch('https://localhost:5001/api/products/featured', {
+      credentials: 'include'
+    })
+          .then(res => res.json())
       .then(data => setFeaturedProducts(data))
       .catch(err => console.error(err));
   }, []);
