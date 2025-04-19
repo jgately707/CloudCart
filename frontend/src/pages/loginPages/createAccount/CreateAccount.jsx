@@ -1,145 +1,151 @@
 import React, { useState } from 'react';
+import Logo from '../../../components/Logo';
 
 const CreateAccount = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [message, setMessage] = useState(''); // New state for the message
+  const [message, setMessage] = useState('');
 
   async function handleSubmit() {
     try {
-      const response = await fetch("http://localhost:5001/check-email", {
+      const response = await fetch("https://localhost:5001/check-email", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ email: email.trim() }) // Trim any extra whitespace
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim() }),
+        credentials: 'include'
       });
+
       const data = await response.json();
-      console.log("Response from check-email:", data);
-
       if (data.exists) {
-        setMessage("Email already in use!");
-        return; // Stop further processing
-      } else {
-        // Continue with further validation
-        let flag1 = password === confirmPassword &&
-                    password.length >= 5 &&
-                    (password.includes("@") || password.includes("!") || password.includes("$")) &&
-                    /\d/.test(password);
-        let flag2 = name.length >= 2;
-        let flag3 = email.includes("@gmail.com") ||
-                    email.includes("@outlook.com") ||
-                    email.includes("@yahoo.com");
-
-        if (flag1 && flag2 && flag3) {
-          try {
-            const response = await fetch("http://localhost:5001/create-account", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify({
-    name: name.trim(),
-    email: email.trim(),
-    password: password,
-    confirmPassword: confirmPassword // add this line
-  })
-});
-
-            const data = await response.json(); // receive the server's response
-            console.log("Server says:", data);
-            setMessage(data.message || "Account Created");
-
-          } catch (error) {
-            
-          }
-          setMessage("Account Created");
-        } else {
-          let errorMessage = "";
-          if (!flag1) errorMessage += "Remake password and double check criteria. ";
-          if (!flag2) errorMessage += "Name field cannot be empty. ";
-          if (!flag3) errorMessage += "Must be a valid email. ";
-          setMessage(errorMessage);
-        }
+        setMessage("Email already in use.");
+        return;
       }
-    } catch (error) {
-      console.error("Fetch error:", error);
-      setMessage("Error communicating with the server.");
+
+      const validPass =
+        password === confirmPassword &&
+        password.length >= 5 &&
+        /[@!$]/.test(password) &&
+        /\d/.test(password);
+      const validName = name.length >= 2;
+      const validEmail = /@(gmail|yahoo|outlook)\.com$/.test(email);
+
+      if (validPass && validName && validEmail) {
+        const res = await fetch("https://localhost:5001/create-account", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: name.trim(), email: email.trim(), password, confirmPassword }),
+          credentials: 'include'
+        });
+
+        const resData = await res.json();
+        setMessage(resData.message || "Account Created");
+      } else {
+        let err = "";
+        if (!validPass) err += "Password must match, include a symbol and number. ";
+        if (!validName) err += "Name is too short. ";
+        if (!validEmail) err += "Email must be Gmail, Outlook or Yahoo.";
+        setMessage(err);
+      }
+    } catch (err) {
+      console.error("Error:", err);
+      setMessage("Server error, please try again.");
     }
   }
 
   return (
-    <div style={{ textAlign: 'center', marginTop: '70px' }}>
-      <h1>Create account</h1>
+    <div style={{ backgroundColor: '#f2f2f2', minHeight: '100vh' }}>
+      {/* Header with Logo */}
+      <header style={{
+        padding: '20px 40px',
+        backgroundColor: '#e3f2fd',
+        boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+      }}>
+        <Logo />
+      </header>
 
-      {/* Name field */}
-      <div style={{ textAlign: 'left', marginLeft: '550px', marginBottom: '20px' }}>
-        <h2 style={{ color: 'gray', fontSize: '32px', marginBottom: '8px' }}>Your name</h2>
-        <input
-          type="text"
-          placeholder="Enter your name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          style={{ padding: '10px', width: '300px', fontSize: '16px', borderRadius: '5px', border: '1px solid #ccc' }}
-        />
-      </div>
+      {/* Form */}
+      <main style={{ display: 'flex', justifyContent: 'center', padding: '60px 20px' }}>
+        <div style={{
+          backgroundColor: 'white',
+          padding: '48px',
+          borderRadius: '12px',
+          boxShadow: '0 8px 20px rgba(0,0,0,0.08)',
+          width: '100%',
+          maxWidth: '500px'
+        }}>
+          <h2 style={{ marginBottom: '16px', fontSize: '28px' }}>Create Your Account</h2>
+          <p style={{ marginBottom: '40px', color: '#666' }}>Get started with Cloud Cart</p>
 
-      {/* Email field */}
-      <div style={{ textAlign: 'left', marginLeft: '550px', marginBottom: '20px' }}>
-        <h3 style={{ color: 'gray', fontSize: '32px', marginBottom: '8px' }}>Your email</h3>
-        <input
-          type="text"
-          placeholder="Enter your email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          style={{ padding: '10px', width: '300px', fontSize: '16px', borderRadius: '5px', border: '1px solid #ccc' }}
-        />
-      </div>
+          <label>Name</label>
+          <input
+            type="text"
+            value={name}
+            onChange={e => setName(e.target.value)}
+            placeholder="Your name"
+            style={inputStyle}
+          />
 
-      {/* Password field */}
-      <div style={{ textAlign: 'left', marginLeft: '550px', marginBottom: '20px' }}>
-        <h4 style={{ color: 'gray', fontSize: '32px', marginBottom: '8px' }}>Your password</h4>
-        <input
-          type="password"
-          placeholder="Enter your password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          style={{ padding: '10px', width: '300px', fontSize: '16px', borderRadius: '5px', border: '1px solid #ccc' }}
-        />
-      </div>
+          <label style={{ marginTop: '28px' }}>Email</label>
+          <input
+            type="email"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            placeholder="example@gmail.com"
+            style={inputStyle}
+          />
 
-      {/* Confirm password field */}
-      <div style={{ textAlign: 'left', marginLeft: '550px', marginBottom: '20px' }}>
-        <h5 style={{ color: 'gray', fontSize: '32px', marginBottom: '8px' }}>Re-type password</h5>
-        <input
-          type="password"
-          placeholder="Re-enter your password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          style={{ padding: '10px', width: '300px', fontSize: '16px', borderRadius: '5px', border: '1px solid #ccc' }}
-        />
-      </div>
+          <label style={{ marginTop: '28px' }}>Password</label>
+          <input
+            type="password"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            placeholder="••••••••"
+            style={inputStyle}
+          />
 
-      {/* Submit button */}
-      <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-        <button
-          onClick={handleSubmit}
-          style={{ padding:'10px 20px', fontSize: '16px', backgroundColor: '#007bff', color:'white', border:'none', borderRadius:'5px', cursor: 'pointer' }}
-        >
-          submit
-        </button>
-      </div>
+          <label style={{ marginTop: '28px' }}>Confirm Password</label>
+          <input
+            type="password"
+            value={confirmPassword}
+            onChange={e => setConfirmPassword(e.target.value)}
+            placeholder="••••••••"
+            style={inputStyle}
+          />
 
-      {/* Render the message to the user */}
-      {message && (
-        <div style={{ marginTop: '20px', fontSize: '18px', color: 'red' }}>
-          {message}
+          <button onClick={handleSubmit} style={buttonStyle}>
+            Create Account
+          </button>
+
+          {message && (
+            <div style={{ marginTop: '24px', color: 'red', fontSize: '15px' }}>{message}</div>
+          )}
         </div>
-      )}
+      </main>
     </div>
   );
+};
+
+const inputStyle = {
+  width: '100%',
+  padding: '14px',
+  fontSize: '15px',
+  borderRadius: '6px',
+  border: '1px solid #ccc',
+  marginTop: '10px'
+};
+
+const buttonStyle = {
+  marginTop: '36px',
+  width: '100%',
+  padding: '14px',
+  fontSize: '16px',
+  backgroundColor: '#007bff',
+  color: 'white',
+  border: 'none',
+  borderRadius: '6px',
+  cursor: 'pointer'
 };
 
 export default CreateAccount;

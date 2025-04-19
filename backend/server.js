@@ -7,13 +7,18 @@ const app = express();
 
 app.use(cookieParser());
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: 'https://localhost:3000', // ← must match your frontend
   credentials: true
 }));
+
 app.use(express.json());
 
 const authRoutes = require('./routes/authentication');
 const productRoutes = require('./routes/products');
+
+const userRoutes = require('./routes/user');
+app.use('/api/users', userRoutes);
+
 
 app.use(authRoutes);
 app.use('/api/products', productRoutes);
