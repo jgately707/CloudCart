@@ -6,6 +6,7 @@ import CreateAccount from './pages/loginPages/createAccount/CreateAccount';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 import UserHomePage from './pages/homePages/UserHomePage/UserHomePage';
+import AccountPage from './pages/AccountPage/AccountPage';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -15,6 +16,7 @@ root.render(
         <Route path="/login" element={<Login />} />
         <Route path="/create-account" element={<CreateAccount />} />
         <Route path="/home" element={<UserHomePage />} />
+        <Route path= "/account" element={ <AccountPage/>}/>
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

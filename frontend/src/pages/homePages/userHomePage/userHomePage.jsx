@@ -6,16 +6,24 @@ import AccountButton from '../../../components/AccountButton';
 import electronicsBanner from '../../../components/images/shopElectronics.png';
 import ProductCard from '../../Product/ProductCard';
 import './UserHomePage.CSS';
+import { useNavigate } from 'react-router-dom';
+
 
 const UserHomePage = () => {
   const [featuredProducts, setFeaturedProducts] = useState([]);
 
-useEffect(() => {
-  fetch('http://localhost:5001/api/products/featured')
-    .then(res => res.json())
-    .then(data => setFeaturedProducts(data))
-    .catch(err => console.error(err));
-}, []);
+  useEffect(() => {
+    fetch('http://localhost:5001/api/products/featured')
+      .then(res => res.json())
+      .then(data => setFeaturedProducts(data))
+      .catch(err => console.error(err));
+  }, []);
+  const navigate = useNavigate();
+
+  const handleAccountButtonClick = () => {
+    navigate('/account');
+  };
+
 
   return (
     <div style={{ backgroundColor: '#f9f9f9', minHeight: '100vh' }}>
@@ -33,7 +41,7 @@ useEffect(() => {
         </div>
         <div style={actionButtonsStyle}>
           <ShoppingCartButton />
-          <AccountButton />
+          <AccountButton onClick={handleAccountButtonClick}  />
         </div>
       </header>
 

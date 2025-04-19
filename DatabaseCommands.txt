@@ -1,4 +1,5 @@
 ---   psql postgres
+      \c cloudcart
 
 
 ---   cloudcart=# \dt
@@ -17,3 +18,59 @@
 
 
 TO INSERT A NEW USER --->   INSERT INTO users (name, email, password) VALUES ('Alice Example', 'alice@example.com', 'test123');
+
+
+
+-[ RECORD 1 ]---------+------------------------------------------------------------------------------
+product_id            | 1
+product_images        | {https://example.com/image1.jpg,https://example.com/image2.jpg}
+product_title         | Wireless Gaming Mouse
+product_description   | High-performance wireless gaming mouse with 16000 DPI sensor.
+product_category      | electronics
+product_price         | 59.99
+product_discount      | 10.00
+product_form_factor   | mouse
+product_stock         | 50
+product_date_posted   | 2025-04-18 20:53:15.361859
+product_shipping_cost | 5.00
+product_tag           | {gaming,wireless,mouse}
+-[ RECORD 2 ]---------+------------------------------------------------------------------------------
+product_id            | 2
+product_images        | {https://example.com/keyboard1.jpg,https://example.com/keyboard2.jpg}
+product_title         | RGB Mechanical Keyboard
+product_description   | Backlit mechanical keyboard with blue switches and customizable RGB lighting.
+product_category      | electronics
+product_price         | 89.99
+product_discount      | 5.00
+product_form_factor   | keyboard
+product_stock         | 120
+product_date_posted   | 2025-04-18 20:58:08.382582
+product_shipping_cost | 7.00
+product_tag           | {rgb,mechanical,keyboard}
+
+
+INSERT INTO products (
+  product_images,
+  product_title,
+  product_description,
+  product_category,
+  product_price,
+  product_discount,
+  product_form_factor,
+  product_stock,
+  product_shipping_cost,
+  product_tag
+)
+VALUES (
+  ARRAY['https://cloudcart-images.s3.ap-southeast-1.amazonaws.com/iphone-16-pro-max.jpg'],
+  'Apple',
+  'iPhone 16 Pro Max (256 GB, Pacific Blue) + carrier subscription',
+  'electronics',
+  1,199.99,
+  0.00,
+  'phone',
+  3,000,
+  10.00,
+  ARRAY['Apple', 'blue', 'phone', 'iPhone', 'electronics', 'featured']
+);
+

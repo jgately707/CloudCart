@@ -1,8 +1,9 @@
 import React from 'react';
 
-const AccountButton = () => {
+const AccountButton = ({onClick}) => {
   return (
     <button
+      onClick={onClick}
       style={{
         backgroundColor: '#007bff',    // blue background
         border: 'none',
