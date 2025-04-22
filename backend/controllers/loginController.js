@@ -27,7 +27,7 @@ exports.loginPage = async (req, res) => {
     res.cookie('token', token, {
       httpOnly: true,
       secure: true,         // ✅ must be true for HTTPS
-      sameSite: 'Strict',
+      sameSite: 'none',
       maxAge: 3600000       // 1 hour
     });
 

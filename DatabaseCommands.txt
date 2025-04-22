@@ -1,7 +1,7 @@
 ---   psql postgres
       \c cloudcart
 
-//HTTPS=true SSL_CRT_FILE=localhost.pem SSL_KEY_FILE=localhost-key.pem npm start
+HTTPS=true SSL_CRT_FILE=localhost.pem SSL_KEY_FILE=localhost-key.pem npm start
 
 ---   cloudcart=# \dt
            List of relations

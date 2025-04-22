@@ -61,14 +61,15 @@ const HomeSections = ({ featuredProducts }) => (
     <div style={{ marginLeft: '160px', marginTop: '40px' }}>
   <h2 style={{ fontSize: '22px', fontWeight: '600' }}>Featured Products</h2>
   <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', marginTop: '20px' }}>
-    {featuredProducts.map(product => (
-      <ProductCard
-        key={product.product_id}
-        name={product.product_title}
-        price={product.product_price}
-        image={product.product_images[0]}
-      />
-    ))}
+  {featuredProducts.map(product => (
+  <ProductCard
+    key={product.product_id}
+    product_id={product.product_id}
+    product_title={product.product_title}
+    product_price={product.product_price}
+    product_images={product.product_images}
+  />
+))}
   </div>
 </div>
 

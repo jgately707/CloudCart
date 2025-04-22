@@ -1,3 +1,4 @@
+//console.log('incoming cookies:', req.cookies);
 const jwt = require('jsonwebtoken');
 
 function requireAuth(req, res, next) {
