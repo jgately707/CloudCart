@@ -3,65 +3,59 @@ require('dotenv').config();
 const axios = require('axios');
 
 /**
- * Fetches distance in kilometers between two ZIP codes
- * using Google’s Distance Matrix API.
- *
- * @param {string} originZip 
- * @param {string} destZip 
- * @returns {Promise<number>} distance in km
+ * Get distance in km between two ZIPs.
+ * Tries Google’s API first, falls back to simple numeric diff.
  */
 async function calculateDistance(originZip, destZip) {
-  if (!process.env.GOOGLE_MAPS_API_KEY) {
-    throw new Error('Missing GOOGLE_MAPS_API_KEY');
+  const key = process.env.GOOGLE_MAPS_API_KEY;
+  if (key) {
+    try {
+      const params = { origins: originZip, destinations: destZip, key };
+      const { data } = await axios.get(
+        'https://maps.googleapis.com/maps/api/distancematrix/json',
+        { params }
+      );
+      const elem = data.rows?.[0]?.elements?.[0];
+      if (data.status === 'OK' && elem?.status === 'OK') {
+        return elem.distance.value / 1000; // meters → km
+      }
+      console.warn(
+        'Google API returned',
+        data.status,
+        elem?.status,
+        data.error_message
+      );
+    } catch (err) {
+      console.warn('Distance Matrix API error:', err.message);
+    }
   }
 
-  const params = {
-    origins: originZip,
-    destinations: destZip,
-    key: process.env.GOOGLE_MAPS_API_KEY,
-  };
-
-  const url = 'https://maps.googleapis.com/maps/api/distancematrix/json';
-  const { data } = await axios.get(url, { params });
-
-  if (
-    data.status !== 'OK' ||
-    !data.rows?.[0]?.elements?.[0] ||
-    data.rows[0].elements[0].status !== 'OK'
-  ) {
-    throw new Error(
-      `Distance Matrix API error: ${data.error_message || data.rows[0]?.elements[0]?.status}`
-    );
-  }
-
-  // distance.value is in meters
-  const meters = data.rows[0].elements[0].distance.value;
-  return meters / 1000;
+  // Fallback: numeric difference of ZIPs
+  const o = parseInt(originZip, 10) || 0;
+  const d = parseInt(destZip, 10)    || 0;
+  return Math.abs(o - d);
 }
 
 /**
- * Simple shipping cost:
- * - Base fee of $5
- * - Plus $0.10 per km
- *
- * @param {{distanceKm: number}} opts
- * @returns {number}
+ * Shipping cost: base $5 + $0.10 per km.
+ * Distance is clamped to 0 if invalid.
  */
 function calculateShippingCost({ distanceKm }) {
-  const cost = 5 + distanceKm * 0.1;
-  return Number(cost.toFixed(2));
+  const d = typeof distanceKm === 'number' && isFinite(distanceKm)
+    ? distanceKm
+    : 0;
+  return Number((5 + d * 0.1).toFixed(2));
 }
 
 /**
- * ETA: assume
- * - 200 km per day
- * - minimum 1 day
- *
- * @param {{distanceKm: number}} opts
- * @returns {{date: string, days: number}}
+ * ETA: assume 200 km/day, min 1 day.
+ * Clamps invalid distances to 0.
  */
 function calculateEstimatedDelivery({ distanceKm }) {
-  const days = Math.max(1, Math.ceil(distanceKm / 200));
+  const d = typeof distanceKm === 'number' && isFinite(distanceKm)
+    ? distanceKm
+    : 0;
+  const days = Math.max(1, Math.ceil(d / 200));
   const then = Date.now() + days * 24 * 60 * 60 * 1000;
   const date = new Date(then).toISOString().slice(0, 10);
   return { date, days };

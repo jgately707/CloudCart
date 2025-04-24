@@ -16,8 +16,22 @@ router.get('/me', requireAuth, async (req, res) => {
     res.json(result.rows[0]);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Server error' });
+    res.status(500).json({ err: 'Server error' });
   }
 });
+router.get('/address', requireAuth, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const result = await pool.query('SELECT address, city, state, zip_code FROM user_info WHERE user_id = $1', [userId]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'no address' });
+    }
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+})
 
 module.exports = router;
